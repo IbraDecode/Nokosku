@@ -1,23 +1,25 @@
-// pages/Welcome.tsx - Onboarding welcome
 import { useNavigate } from 'react-router-dom';
 import { CatLottie } from '../ui/components/CatLottie';
+import { Page } from '../ui/layouts/Page';
 
 export function Welcome() {
   const navigate = useNavigate();
 
   return (
-    <div className="welcome">
-      <CatLottie variant="welcome" size="lg" />
-      <h1>Beli nomor OTP, tanpa ribet.</h1>
-      <p>Pilih aplikasi → bayar → OTP masuk realtime.</p>
-      <div className="welcome-actions">
-        <button className="btn-primary" onClick={() => navigate('/login')}>
+    <Page>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18, textAlign: 'left' }}>
+        <CatLottie variant="welcome" size="lg" />
+        <div>
+          <h2 style={{ margin: '10px 0', fontSize: 26 }}>Beli nomor OTP, tanpa ribet.</h2>
+          <div className="muted">Pilih aplikasi → bayar → OTP masuk realtime.</div>
+        </div>
+        <button className="primary-btn" onClick={() => navigate('/login')}>
           Mulai
         </button>
-        <button className="btn-secondary" onClick={() => navigate('/register')}>
+        <button className="ghost-btn" onClick={() => navigate('/register')}>
           Saya baru, bikin akun
         </button>
       </div>
-    </div>
+    </Page>
   );
 }

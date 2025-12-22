@@ -1,19 +1,24 @@
-// ui/layouts/Page.tsx - Layout wrapper untuk halaman
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { TopBar } from '../components/TopBar';
 
-interface PageProps {
-  title: string;
+type Props = {
+  title?: string;
+  subtitle?: string;
   showBack?: boolean;
-  rightElement?: ReactNode;
+  actions?: ReactNode;
   children: ReactNode;
-}
+  padded?: boolean;
+};
 
-export function Page({ title, showBack, rightElement, children }: PageProps) {
+export function Page({ title, subtitle, showBack, actions, children, padded = true }: Props) {
   return (
     <div className="page">
-      <TopBar title={title} showBack={showBack} rightElement={rightElement} />
-      <div className="page-content">{children}</div>
+      {(title || subtitle || showBack || actions) && (
+        <TopBar title={title} subtitle={subtitle} showBack={showBack} actions={actions} />
+      )}
+      <div className="content-area" style={{ paddingTop: padded ? undefined : 0 }}>
+        {children}
+      </div>
     </div>
   );
 }

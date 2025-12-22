@@ -1,84 +1,90 @@
-// pages/Register.tsx - Register page
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { authApi } from '../api/auth';
-import { showToast } from '../ui/components/Toast';
+import type { FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Input } from '../ui/components/Input';
+import { useToast } from '../ui/components/Toast';
+import { useAuth } from '../app/auth';
+import { Page } from '../ui/layouts/Page';
 
 export function Register() {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
   const navigate = useNavigate();
+  const { register } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      showToast('Password tidak cocok', 'error');
+    if (password !== confirm) {
+      toast.push({ type: 'error', title: 'Password tidak sama.' });
       return;
     }
     setLoading(true);
     try {
-      const res = await authApi.register({ name, email, password });
-      if (res.success) {
-        showToast('Registrasi berhasil, silakan login', 'success');
-        navigate('/login');
-      }
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Registrasi gagal', 'error');
+      await register({ email, password });
+      toast.push({ type: 'love', title: 'Akun jadi, lanjut yuk.' });
+      navigate('/home', { replace: true });
+    } catch (error: any) {
+      const message = error?.response?.data?.error || 'Bentar, sistem lagi ngambek. Coba lagi.';
+      toast.push({ type: 'error', title: message });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-header">
-        <h1>Bikin akun dulu</h1>
-      </div>
-      <form onSubmit={handleSubmit} className="auth-form">
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Nama"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+    <Page>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            aria-label="Kembali"
+            onClick={() => navigate(-1)}
+            style={{ border: 'none', background: 'transparent', color: 'var(--text)' }}
+          >
+            <i className="bi bi-arrow-left" />
+          </button>
+          <span className="muted">Nokosku</span>
         </div>
-        <div className="form-group">
-          <input
+        <h2 style={{ margin: '4px 0' }}>Bikin akun dulu</h2>
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Email"
+            icon="bi-envelope"
             type="email"
-            placeholder="Email"
+            placeholder="email kamu"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             required
           />
-        </div>
-        <div className="form-group">
-          <input
+          <Input
+            label="Password"
+            icon="bi-lock"
             type="password"
-            placeholder="Password"
+            placeholder="Minimal 8 karakter"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             required
           />
-        </div>
-        <div className="form-group">
-          <input
+          <Input
+            label="Konfirmasi Password"
+            icon="bi-lock-fill"
             type="password"
-            placeholder="Konfirmasi Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Ulangi password"
+            value={confirm}
+            onChange={e => setConfirm(e.target.value)}
             required
           />
+          <button className="primary-btn" type="submit" disabled={loading}>
+            {loading ? 'Sebentar...' : 'Daftar'}
+          </button>
+        </form>
+        <div style={{ textAlign: 'center' }}>
+          <span className="muted">Sudah punya akun? </span>
+          <Link to="/login">Login</Link>
         </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Daftar'}
-        </button>
-      </form>
-      <Link to="/login">Sudah punya akun? Login</Link>
-    </div>
+      </div>
+    </Page>
   );
 }
