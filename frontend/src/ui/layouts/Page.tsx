@@ -1,11 +1,11 @@
 // ui/layouts/Page.tsx - Layout wrapper untuk halaman
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { TopBar } from '../components/TopBar';
 
 interface PageProps {
   title: string;
   showBack?: boolean;
-  rightElement?: React.ReactNode;
+  rightElement?: ReactNode;
   children: ReactNode;
 }
 
