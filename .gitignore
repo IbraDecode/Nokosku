@@ -1,0 +1,16 @@
+node_modules/
+.env
+logs/
+*.log
+.DS_Store
+coverage/
+.nyc_output/
+.cache/
+dist/
+build/
+.vscode/
+.idea/
+*.swp
+*.swo
+package-lock.json.backup
+ecosystem.config.js.backup
