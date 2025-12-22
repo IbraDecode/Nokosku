@@ -5,7 +5,10 @@ const User = require('../models/user');
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id);
-    res.json({ success: true, profile: { email: user.email, name: user.name, balance: user.balance } });
+    res.json({
+      success: true,
+      profile: { email: user.email, name: user.name, balance: user.balance, is_admin: user.is_admin, is_banned: user.is_banned }
+    });
   } catch (e) {
     res.status(500).json({ error: 'Maaf, sistem error profile.' });
   }

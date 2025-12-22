@@ -1,60 +1,86 @@
-// ui/components/Toast.tsx - Custom toast untuk Nokosku
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { CatLottie } from './CatLottie';
+import clsx from 'classnames';
 
-type ToastType = 'info' | 'loading' | 'success' | 'error';
+export type ToastType = 'info' | 'loading' | 'success' | 'love' | 'error' | 'hint';
 
-interface ToastData {
+type ToastItem = {
   id: string;
-  message: string;
   type: ToastType;
-}
+  title: string;
+  message?: string;
+  duration?: number;
+};
 
-let toastQueue: ToastData[] = [];
-let setToasts: React.Dispatch<React.SetStateAction<ToastData[]>> | null = null;
+type ToastContextType = {
+  push: (toast: Omit<ToastItem, 'id'>) => void;
+};
 
-export function ToastContainer() {
-  const [toasts, setToastsState] = useState<ToastData[]>([]);
-  setToasts = setToastsState;
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [isDesktop, setDesktop] = useState<boolean>(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setToastsState((prev) => prev.filter((t) => Date.now() - parseInt(t.id) < 6500));
-    }, 1000);
-    return () => clearInterval(timer);
+    const handler = () => setDesktop(window.innerWidth >= 900);
+    handler();
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
   }, []);
 
+  const push = (toast: Omit<ToastItem, 'id'>) => {
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    setToasts(prev => [...prev, { ...toast, id }]);
+    const duration = toast.duration ?? (toast.type === 'loading' ? 5000 : 2800);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, duration);
+  };
+
+  const providerValue = useMemo(() => ({ push }), []);
+
+  const positionStyle = isDesktop
+    ? { top: 18, right: 18, left: 'auto' as const }
+    : { bottom: 82, left: 12, right: 12 };
+
   return (
-    <div className="toast-container">
-      {toasts.map((toast) => (
-        <div key={toast.id} className={`toast toast-${toast.type}`}>
-          <div className="toast-content">
-            <CatLottie variant={getLottieVariant(toast.type)} size="sm" />
-            <span>{toast.message}</span>
-          </div>
+    <ToastContext.Provider value={providerValue}>
+      {children}
+      <div className={clsx('toast-stack', isDesktop && 'desktop')} style={positionStyle}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {toasts.map(toast => (
+            <div key={toast.id} className="toast-item">
+              <CatLottie
+                variant={
+                  toast.type === 'success'
+                    ? 'successCheck'
+                    : toast.type === 'love'
+                      ? 'successLove'
+                      : toast.type === 'error'
+                        ? 'error'
+                        : toast.type === 'loading'
+                          ? 'loading'
+                          : 'hint'
+                }
+                size="sm"
+                autoplay
+                loop={toast.type === 'loading'}
+              />
+              <div className="text">
+                <strong>{toast.title}</strong>
+                {toast.message && <span className="muted">{toast.message}</span>}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </div>
+    </ToastContext.Provider>
   );
 }
 
-function getLottieVariant(type: ToastType): 'hint' | 'loading' | 'successCheck' | 'error' {
-  switch (type) {
-    case 'info':
-      return 'hint';
-    case 'loading':
-      return 'loading';
-    case 'success':
-      return 'successCheck';
-    case 'error':
-      return 'error';
-  }
-}
-
-export function showToast(message: string, type: ToastType = 'info') {
-  if (!setToasts) return;
-  const id = Date.now().toString();
-  const toast: ToastData = { id, message, type };
-  toastQueue.push(toast);
-  setToasts((prev) => [...prev, toast]);
+export function useToast() {
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error('useToast harus di dalam ToastProvider');
+  return ctx;
 }

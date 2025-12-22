@@ -1,29 +1,19 @@
-// api/auth.ts - Auth endpoints
-import http from './http';
+import { http, setStoredToken } from './http';
 
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
+export type AuthResponse = {
   success: boolean;
-  token?: string;
+  token: string;
   name?: string;
-  email?: string;
-  message?: string;
+  email: string;
+};
+
+export async function login(payload: { email: string; password: string }) {
+  const { data } = await http.post<AuthResponse>('/api/v1/auth/login', payload);
+  setStoredToken(data.token);
+  return data;
 }
 
-export const authApi = {
-  register: (data: RegisterData): Promise<AuthResponse> =>
-    http.post('/api/v1/auth/register', data).then(res => res.data),
-
-  login: (data: LoginData): Promise<AuthResponse> =>
-    http.post('/api/v1/auth/login', data).then(res => res.data),
-};
+export async function register(payload: { email: string; password: string; name?: string }) {
+  const { data } = await http.post('/api/v1/auth/register', payload);
+  return data;
+}

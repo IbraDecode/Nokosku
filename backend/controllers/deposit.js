@@ -153,3 +153,19 @@ exports.cancel = async (req, res) => {
     res.status(500).json({ error: 'Maaf, sistem error cancel.' });
   }
 };
+
+// List deposit methods untuk frontend
+exports.methods = async (_req, res) => {
+  res.json({
+    success: true,
+    methods: [
+      {
+        code: 'atlantic',
+        name: 'Atlantic QRIS',
+        description: 'QRIS otomatis via Atlantic H2H',
+        min: 5000,
+        status: 'active'
+      }
+    ]
+  });
+};

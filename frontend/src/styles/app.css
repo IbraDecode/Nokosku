@@ -1,105 +1,293 @@
-/* styles/app.css - App styles */
+/* Base layout bergaya mobile-first */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.app-frame {
+  width: 100%;
+  max-width: 520px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: var(--nav-height);
+}
+
+.content-area {
+  flex: 1;
+  padding: 18px 16px 24px;
+}
+
 .top-bar {
   display: flex;
   align-items: center;
-  padding: 10px 20px;
+  gap: 10px;
+  padding: 14px 16px 4px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  height: 50px;
 }
 
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-}
-
-.top-bar-title {
-  flex: 1;
-  text-align: center;
+.top-bar h1,
+.top-bar h2,
+.top-bar h3 {
   margin: 0;
-  font-size: 18px;
 }
 
-.top-bar-right {
-  flex: 0;
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.page-content {
-  padding: 20px;
-  max-width: 480px;
-  margin: 0 auto;
+.chip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.card-plain {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.section-title {
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.balance-block {
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(76, 192, 255, 0.16), rgba(37, 99, 235, 0.1));
+  border: 1px solid var(--border);
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  text-align: center;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.list-row:last-child {
+  border-bottom: none;
 }
 
 .bottom-nav {
   position: fixed;
   bottom: 0;
   left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  background: var(--bg);
+  width: 100%;
+  height: var(--nav-height);
+  background: var(--surface);
   border-top: 1px solid var(--border);
-  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  z-index: 30;
 }
 
-.bottom-nav-item {
+.bottom-nav-inner {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.bottom-nav button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-decoration: none;
-  color: var(--text-muted);
-  padding: 5px;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
 }
 
-.bottom-nav-item.active {
+.bottom-nav button.active {
   color: var(--primary);
 }
 
-.toast-container {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-}
-
-.toast {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  display: flex;
+.badge {
+  display: inline-flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
 }
 
-.toast-content {
+.otp-box {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed var(--border);
+  background: rgba(76, 192, 255, 0.04);
+}
+
+.toast-stack {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.toast-item {
+  pointer-events: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
   gap: 10px;
+  box-shadow: var(--shadow-soft);
 }
 
-.badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+.toast-item .text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.badge-pending { background: var(--warning); color: white; }
-.badge-processing { background: var(--primary); color: white; }
-.badge-success { background: var(--success); color: white; }
-.badge-failed { background: var(--danger); color: white; }
-.badge-expired { background: var(--text-muted); color: white; }
-.badge-cancel { background: var(--danger); color: white; }
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
 
-/* Mobile first */
-@media (min-width: 768px) {
-  .page-content {
-    max-width: 480px;
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.ghost-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.section {
+  margin: 14px 0;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+@media (min-width: 900px) {
+  .app-frame {
+    margin: 0 auto;
   }
-  .bottom-nav {
-    display: none;
+
+  .toast-stack.desktop {
+    width: 520px;
+    right: auto;
+    margin: 0 auto;
   }
 }

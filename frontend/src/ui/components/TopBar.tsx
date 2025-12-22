@@ -1,25 +1,33 @@
-// ui/components/TopBar.tsx - Top bar dengan back dan title
-import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import clsx from 'classnames';
 
-interface TopBarProps {
-  title: string;
+type Props = {
+  title?: string;
+  subtitle?: string;
   showBack?: boolean;
-  rightElement?: React.ReactNode;
-}
+  actions?: React.ReactNode;
+  className?: string;
+};
 
-export function TopBar({ title, showBack = false, rightElement }: TopBarProps) {
+export function TopBar({ title, subtitle, showBack, actions, className }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div className="top-bar">
+    <div className={clsx('top-bar', className)}>
       {showBack && (
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          <ArrowLeft size={20} />
+        <button
+          aria-label="Kembali"
+          onClick={() => navigate(-1)}
+          style={{ background: 'transparent', border: 'none', color: 'var(--text)', padding: 6 }}
+        >
+          <i className="bi bi-arrow-left" />
         </button>
       )}
-      <h1 className="top-bar-title">{title}</h1>
-      <div className="top-bar-right">{rightElement}</div>
+      <div style={{ flex: 1 }}>
+        {title && <div style={{ fontWeight: 700 }}>{title}</div>}
+        {subtitle && <div className="muted" style={{ fontSize: '0.9rem' }}>{subtitle}</div>}
+      </div>
+      {actions}
     </div>
   );
 }

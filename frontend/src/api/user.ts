@@ -1,42 +1,29 @@
-// api/user.ts - User endpoints
-import http from './http';
+import { http } from './http';
 
-export interface Profile {
-  success: boolean;
-  profile: {
-    email: string;
-    name: string;
-    balance: number;
-  };
-}
-
-export interface Balance {
-  success: boolean;
-  balance: string;
-}
-
-export interface Transaction {
-  id: number;
-  type: string;
-  amount: number;
-  created_at: string;
-}
-
-export interface Transactions {
-  success: boolean;
-  transactions: Transaction[];
-}
-
-export const userApi = {
-  getProfile: (): Promise<Profile> =>
-    http.get('/api/v1/user/profile').then(res => res.data),
-
-  updateProfile: (data: Partial<{ name: string; email: string }>): Promise<{ success: boolean }> =>
-    http.put('/api/v1/user/profile', data).then(res => res.data),
-
-  getBalance: (): Promise<Balance> =>
-    http.get('/api/v1/user/profile/balance').then(res => res.data),
-
-  getTransactions: (): Promise<Transactions> =>
-    http.get('/api/v1/user/profile/transactions').then(res => res.data),
+export type Profile = {
+  email: string;
+  name?: string;
+  balance: number;
+  is_admin?: boolean;
+  is_banned?: boolean;
 };
+
+export async function getProfile() {
+  const { data } = await http.get<{ success: boolean; profile: Profile }>('/api/v1/user/profile');
+  return data.profile;
+}
+
+export async function updateProfile(payload: Partial<Profile>) {
+  const { data } = await http.put('/api/v1/user/profile', payload);
+  return data;
+}
+
+export async function getBalance() {
+  const { data } = await http.get<{ success: boolean; balance: number }>('/api/v1/user/balance');
+  return data.balance;
+}
+
+export async function getTransactions() {
+  const { data } = await http.get<{ success: boolean; transactions: any[] }>('/api/v1/user/transactions');
+  return data.transactions;
+}

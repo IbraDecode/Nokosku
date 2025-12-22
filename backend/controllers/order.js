@@ -114,6 +114,58 @@ exports.cancel = async (req, res) => {
   }
 };
 
+// Quote harga sebelum order
+exports.quote = async (req, res) => {
+  try {
+    const { service_code, country_name, operator_id } = req.body;
+    if (!service_code || !country_name) return res.status(400).json({ error: 'Pilih aplikasi & negara dulu.' });
+    const countryResp = await axios.get(`https://www.rumahotp.com/api/v2/countries?service_id=${service_code}`, {
+      headers: {
+        'x-apikey': process.env.RUMAHOTP_APIKEY,
+        'Accept': 'application/json'
+      }
+    });
+    const negara = countryResp.data.data.find((x) => x.name === country_name);
+    if (!negara) return res.status(400).json({ error: 'Negara tidak valid di provider.' });
+    const { number_id, pricelist } = negara;
+    const provider_id = pricelist?.[0]?.provider_id;
+    if (!provider_id) return res.status(400).json({ error: 'Provider ID tidak tersedia.' });
+    let opsId = operator_id || 1;
+    if (!operator_id) {
+      const opResp = await axios.get(
+        `https://www.rumahotp.com/api/v2/operators?country=${encodeURIComponent(country_name)}&provider_id=${provider_id}`,
+        {
+          headers: {
+            'x-apikey': process.env.RUMAHOTP_APIKEY,
+            'Accept': 'application/json'
+          }
+        }
+      );
+      opsId = opResp.data.data?.find((o) => o.name === 'any')?.id || 1;
+    }
+    const markupRule =
+      (await MarkupRule.findOne({
+        where: { service: service_code, country: country_name, operator: opsId }
+      })) || { markup: 1000 };
+    const basePrice = pricelist?.[0]?.price || 5000;
+    const sellingPrice = basePrice + markupRule.markup;
+    return res.json({
+      success: true,
+      quote: {
+        base_price: basePrice,
+        markup: markupRule.markup,
+        selling_price: sellingPrice,
+        operator_id: opsId,
+        provider_id,
+        number_id
+      }
+    });
+  } catch (e) {
+    console.error('Quote error:', e.message, e?.response?.data);
+    return res.status(500).json({ error: e?.response?.data?.message || 'Maaf, sistem error hitung harga.' });
+  }
+};
+
 // Route create order
 exports.create = async (req, res) => {
     try {

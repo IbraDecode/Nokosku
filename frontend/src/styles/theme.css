@@ -1,30 +1,43 @@
-/* styles/theme.css - Theme variables */
+/* Theme variables dan switch light/dark */
 :root {
-  --bg: #ffffff;
-  --bg-muted: #f8f9fa;
-  --text: #212529;
-  --text-muted: #6c757d;
-  --border: #dee2e6;
-  --primary: #007bff;
-  --success: #28a745;
-  --danger: #dc3545;
-  --warning: #ffc107;
+  color-scheme: light dark;
+  --bg: #0b0c10;
+  --surface: #11131a;
+  --text: #eef2ff;
+  --muted: #9ea8c7;
+  --border: #1d2230;
+  --primary: #4cc0ff;
+  --success: #5be7a9;
+  --danger: #ff7b7b;
+  --warning: #ffc861;
+  --nav-height: 64px;
+  --radius: 14px;
+  --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.2);
+  --font-main: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-[data-theme="dark"] {
-  --bg: #121212;
-  --bg-muted: #1e1e1e;
-  --text: #ffffff;
-  --text-muted: #b0b0b0;
-  --border: #333333;
-  --primary: #0d6efd;
-  --success: #198754;
-  --danger: #dc3545;
-  --warning: #fd7e14;
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f8f9fb;
+  --surface: #ffffff;
+  --text: #1f2430;
+  --muted: #6c7485;
+  --border: #e5e7ef;
+  --primary: #2563eb;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Segoe UI', sans-serif;
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0b0c10;
+  --surface: #11131a;
+  --text: #eef2ff;
+  --muted: #9ea8c7;
+  --border: #1d2230;
+  --primary: #4cc0ff;
+  --success: #5be7a9;
+  --danger: #ff7b7b;
+  --warning: #ffc861;
 }

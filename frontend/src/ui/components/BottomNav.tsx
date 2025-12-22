@@ -1,29 +1,38 @@
-// ui/components/BottomNav.tsx - Bottom navigation untuk mobile
-import { Link, useLocation } from 'react-router-dom';
-import { Home, ShoppingCart, List, User } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import clsx from 'classnames';
 
-export function BottomNav() {
+type NavItem = {
+  label: string;
+  icon: string;
+  path: string;
+};
+
+const defaultItems: NavItem[] = [
+  { label: 'Home', icon: 'bi-house-door', path: '/home' },
+  { label: 'Beli', icon: 'bi-bag-check', path: '/buy' },
+  { label: 'Riwayat', icon: 'bi-clock-history', path: '/orders' },
+  { label: 'Profil', icon: 'bi-person', path: '/profile' }
+];
+
+export function BottomNav({ items = defaultItems, hidden }: { items?: NavItem[]; hidden?: boolean }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const items = [
-    { to: '/home', icon: Home, label: 'Home' },
-    { to: '/buy', icon: ShoppingCart, label: 'Beli' },
-    { to: '/orders', icon: List, label: 'Riwayat' },
-    { to: '/profile', icon: User, label: 'Profil' },
-  ];
+  if (hidden) return null;
 
   return (
-    <div className="bottom-nav">
-      {items.map((item) => (
-        <Link
-          key={item.to}
-          to={item.to}
-          className={`bottom-nav-item ${location.pathname === item.to ? 'active' : ''}`}
-        >
-          <item.icon size={20} />
-          <span>{item.label}</span>
-        </Link>
-      ))}
-    </div>
+    <nav className="bottom-nav">
+      <div className="bottom-nav-inner">
+        {items.map(item => {
+          const active = location.pathname === item.path || location.pathname.startsWith(`${item.path}/`);
+          return (
+            <button key={item.path} className={clsx(active && 'active')} onClick={() => navigate(item.path)}>
+              <i className={`bi ${item.icon}`} />
+              <span style={{ fontSize: '0.85rem' }}>{item.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

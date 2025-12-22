@@ -57,7 +57,9 @@ Get user profile.
   "profile": {
     "email": "user@example.com",
     "name": "User Name",
-    "balance": 10000
+    "balance": 10000,
+    "is_admin": false,
+    "is_banned": false
   }
 }
 ```
@@ -93,6 +95,25 @@ Get user transactions.
 
 ## Deposit
 
+### GET /api/v1/deposit/methods
+List metode deposit yang aktif.
+
+**Response:**
+```json
+{
+  "success": true,
+  "methods": [
+    {
+      "code": "atlantic",
+      "name": "Atlantic QRIS",
+      "description": "QRIS otomatis via Atlantic H2H",
+      "min": 5000,
+      "status": "active"
+    }
+  ]
+}
+```
+
 ### POST /api/v1/deposit/create
 Create deposit.
 
@@ -112,7 +133,9 @@ Create deposit.
     "id": 1,
     "nominal": 10000,
     "status": "pending",
-    "qr_string": "qr_code_string"
+    "provider_response": {
+      "qr_image": "https://..."
+    }
   }
 }
 ```
@@ -183,6 +206,32 @@ Get operators for country.
 {
   "success": true,
   "operators": [ { "id": 1, "name": "Operator 1" } ]
+}
+```
+
+### POST /api/v1/orders/quote
+Hitung harga jual berdasarkan markup.
+
+**Request:**
+```json
+{
+  "service_code": "whatsapp",
+  "country_name": "Indonesia",
+  "operator_id": 1
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "quote": {
+    "base_price": 5000,
+    "markup": 1000,
+    "selling_price": 6000,
+    "operator_id": 1,
+    "provider_id": 1
+  }
 }
 ```
 

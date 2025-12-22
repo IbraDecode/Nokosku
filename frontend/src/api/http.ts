@@ -1,31 +1,46 @@
-// api/http.ts - Axios instance untuk Nokosku
-import axios from 'axios';
+import axios, { type AxiosRequestHeaders } from 'axios';
 
-const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+export const authTokenKey = 'nk_token';
+
+export function getStoredToken() {
+  return localStorage.getItem(authTokenKey) || '';
+}
+
+export function setStoredToken(token: string) {
+  if (token) {
+    localStorage.setItem(authTokenKey, token);
+  } else {
+    localStorage.removeItem(authTokenKey);
+  }
+}
+
+export const http = axios.create({
+  baseURL: API_BASE,
+  timeout: 20000
 });
 
-// Interceptor request: attach token
-http.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+http.interceptors.request.use(config => {
+  const token = getStoredToken();
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    const headers: AxiosRequestHeaders = (config.headers as AxiosRequestHeaders) || {};
+    headers.Authorization = `Bearer ${token}`;
+    config.headers = headers;
   }
   return config;
 });
 
-// Interceptor response: handle 401
 http.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  res => res,
+  err => {
+    const status = err?.response?.status;
+    if (status === 401) {
+      setStoredToken('');
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
-
-export default http;

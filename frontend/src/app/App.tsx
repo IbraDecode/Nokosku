@@ -1,17 +1,10 @@
-// app/App.tsx - Main App component
-import { RouterProvider } from 'react-router-dom';
-import { router } from './router';
-import { ToastContainer } from '../ui/components/Toast';
-import '../styles/theme.css';
-import '../styles/app.css';
+import { AppRoutes } from './router';
+import { AppShell } from './AppShell';
 
-function App() {
+export default function App() {
   return (
-    <>
-      <RouterProvider router={router} />
-      <ToastContainer />
-    </>
+    <AppShell>
+      <AppRoutes />
+    </AppShell>
   );
 }
-
-export default App;
